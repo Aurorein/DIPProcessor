@@ -3,7 +3,7 @@
 #include "image_process.h"
 #include<memory>
 
-auto image_process_ = std::make_unique<image_process>();
+
 
 
 int main(int argc, char *argv[]){
@@ -15,9 +15,11 @@ int main(int argc, char *argv[]){
     std::string image_path = argv[1];
 
     // 处理bmp格式文件
-    image_process *image_process_ = new image_process();
-    image_process_ ->read_file(image_path);
+    auto image_process_ = std::make_unique<image_process>(image_path);
+
+    image_process_ ->read_file();
     
+    image_process_->convert_to_gray();
 
 
     return 0;
