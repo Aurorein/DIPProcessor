@@ -1,3 +1,0 @@
-/mnt/d/Papers/大三上/数字图像处理/作业/作业1/build/CMakeFiles/rebuild_cache.dir
-/mnt/d/Papers/大三上/数字图像处理/作业/作业1/build/CMakeFiles/edit_cache.dir
-/mnt/d/Papers/大三上/数字图像处理/作业/作业1/build/CMakeFiles/main.dir
