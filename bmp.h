@@ -83,19 +83,24 @@ private:
     RGBQUAD* queue_;
     char* data_;
 public:
+    ~bmp(){
+        // 防止内存泄漏
+        delete data_;
+        delete queue_;
+    }
 
     void serialize_file_header(){}
     void deserialize_file_header(char *src){
         int offset = 0;
         file_header_.bf_type_ = *reinterpret_cast<const uint16_t*>(src);
         offset += sizeof(uint16_t);
-        file_header_.bf_off_bits_ = *reinterpret_cast<const uint32_t*>(src + offset);
+        file_header_.bf_size_ = *reinterpret_cast<const uint32_t*>(src + offset);
         offset += sizeof(uint32_t);
         file_header_.bf_reserved1_ = *reinterpret_cast<const uint16_t*>(src + offset);
         offset += sizeof(uint16_t);
         file_header_.bf_reserved2_ = *reinterpret_cast<const uint16_t*>(src + offset);
         offset += sizeof(uint16_t);
-        file_header_.bf_size_ = *reinterpret_cast<const uint32_t*>(src + offset);
+        file_header_.bf_off_bits_ = *reinterpret_cast<const uint32_t*>(src + offset);
     }
 
     void serialize_info_header(){}
@@ -137,6 +142,10 @@ public:
     BITMAPFILEHEADER get_file_header(){return file_header_;}
 
     BITMAPINFOHEADER get_info_header(){return info_header_;}
+
+    uint32_t get_bf_off_bits(){return file_header_.bf_off_bits_;}
+
+    RGBQUAD* get_queue(){return queue_;}
 
 
 

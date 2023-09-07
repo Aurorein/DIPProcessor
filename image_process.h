@@ -12,6 +12,8 @@ public:
 
     void convert_to_gray();
 
+    void inverse_gray_color();
+
     
 private:
     std::string file_path_;  // 要处理的文件路径

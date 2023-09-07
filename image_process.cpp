@@ -1,5 +1,6 @@
 #include "image_process.h"
 #include <fstream>
+#include <cstring>
 
 
 void image_process::read_file(){
@@ -19,14 +20,23 @@ void image_process::read_file(){
     delete header_buffer;
 
     // 2. 如果有调色板，读取调色板
-    // 如果颜色位数是24，说明没有用到调色板
+    // 如果颜色位数是8
     if(bmp_file_.get_bit_count() == 8){
+        int32_t size_of_queue = sizeof(RGBQUAD)*(256);
 
+        char* queue_buffer = new char[size_of_queue];
+        file.read(queue_buffer, size_of_queue);
+
+        
+        bmp_file_.set_queue(reinterpret_cast<RGBQUAD *>(queue_buffer));
+        
     }
+    
 
     // 3. 读取真实数据
     char *data = new char[bmp_file_.get_size_image()];
     bmp_file_.set_data(data);
+    // file.seekg(bmp_file_.get_bf_off_bits(), std::ios::beg);
     file.read(data, bmp_file_.get_size_image());
 
 
@@ -39,6 +49,12 @@ void image_process::read_file(){
 
 
 void image_process::convert_to_gray(){
+    // 判断是否为24真彩图片
+    if(bmp_file_.get_bit_count() != 24){
+        std::cerr<<"please input a 24 color image!"<<std::endl;
+        return;
+    }
+
     // 1. 计算灰度值
     int32_t width = bmp_file_.get_width();
     int32_t height = bmp_file_.get_height();
@@ -111,4 +127,59 @@ void image_process::convert_to_gray(){
     
     // 关闭文件资源
     file.close();
+}
+
+
+void image_process::inverse_gray_color(){
+    if(bmp_file_.get_bit_count() != 8){
+        std::cerr<<"please input a gray image!"<<std::endl;
+        return;
+    }
+
+    // 1. 在当前的file_path下加一个_inverse
+    size_t pos = file_path_.find_last_of(".");
+    if(pos == std::string::npos) {
+        throw std::exception();
+    }
+    std::string file_name = file_path_.substr(0, pos);
+    std::string file_ext = file_path_.substr(pos + 1);
+
+    file_name += "_inverse";
+    std::string save_file_path = file_name + "." + file_ext;
+
+    // 2. 拷贝原来文件的位图文件头、位图信息头、调色板
+    std::ofstream file(save_file_path, std::ios::binary);
+    if (!file) {
+        std::cerr << "failed to create the BMP file to save." << std::endl;
+        return;
+    }
+
+    BITMAPFILEHEADER file_header = bmp_file_.get_file_header();
+    BITMAPINFOHEADER info_header = bmp_file_.get_info_header();
+    file.write(reinterpret_cast<const char*>(&file_header), FILEHEADER_SIZE);
+    file.write(reinterpret_cast<const char*>(&info_header), INFOHEDER_SIZE);
+    // 拷贝queue
+    int32_t size_of_queue = sizeof(RGBQUAD)*256;
+    file.write(reinterpret_cast<const char*>(bmp_file_.get_queue()), size_of_queue);
+
+    // 3. 对每个位图数据取反
+    uint8_t* data = reinterpret_cast<uint8_t*>(bmp_file_.get_data());
+    int32_t width = bmp_file_.get_width();
+    int32_t height = bmp_file_.get_height();
+    uint8_t* inverse_data = new uint8_t[bmp_file_.get_size_image()];
+    int32_t byte_lines = (width * 8 / 8 + 3) / 4 * 4;
+    
+    for(int32_t i = 0;i<height ;i++){
+        for(int32_t j = 0;j<width;j++){
+            *(inverse_data + i*byte_lines + j) = 255 - *(data + i*byte_lines + j);
+        }
+    }
+    file.write(reinterpret_cast<char *>(inverse_data), bmp_file_.get_size_image());
+    
+    // 记得释放资源
+    delete[] inverse_data;
+    
+    // 关闭文件资源
+    file.close();
+
 }

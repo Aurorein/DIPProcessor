@@ -19,8 +19,8 @@ int main(int argc, char *argv[]){
 
     image_process_ ->read_file();
     
-    image_process_->convert_to_gray();
-
+    // image_process_->convert_to_gray();
+    image_process_->inverse_gray_color();
 
     return 0;
 }

@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 project(imageProcess)
+set(CMAKE_BUILD_TYPE "Debug")
 
 add_executable(image-server main.cpp image_process.cpp)
 
