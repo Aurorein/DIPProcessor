@@ -14,6 +14,8 @@ public:
 
     void inverse_gray_color();
 
+    void channel_split();
+
     
 private:
     std::string file_path_;  // 要处理的文件路径
