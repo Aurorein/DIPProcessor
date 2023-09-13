@@ -9,8 +9,8 @@ image process class homework
 ###### image_histogram (作业2 图像直方图)
 
 ### 运行
-mkdir build
-cd build
-cmake ..
-cmake --build .
-./image-server 要处理的图像的路径
+mkdir build  
+cd build  
+cmake ..  
+cmake --build .  
+./image-server 要处理的图像的路径  
