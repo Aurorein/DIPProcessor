@@ -1,6 +1,7 @@
 #include<iostream>
 #include<cstdlib>
-#include "image_process.h"
+#include "./src/image_process/image_process.h"
+#include "./src/image_histogram/image_histogram.h"
 #include<memory>
 
 
@@ -14,15 +15,26 @@ int main(int argc, char *argv[]){
     }
     std::string image_path = argv[1];
 
-    // 处理bmp格式文件
-    auto image_process_ = std::make_unique<image_process>(image_path);
+    /**
+     * 图像变换处理
+     */
+    // auto image_process_ = std::make_unique<image_process>(image_path);
 
-    image_process_ ->read_file();
+    // image_process_ ->read_file();
     
-    // image_process_->convert_to_gray();
-    // image_process_->inverse_gray_color();
+    // // image_process_->convert_to_gray();
+    // // image_process_->inverse_gray_color();
 
-    image_process_->channel_split();
+    // image_process_->channel_split();
+
+    /**
+     * 图像直方图
+     */
+    auto image_histogram_ = std::make_unique<image_histogram>(image_path);
+
+    image_histogram_->read_file();
+
+    image_histogram_->get_histogram_file();
 
     return 0;
 }

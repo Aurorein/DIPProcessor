@@ -1,8 +1,6 @@
-#include "bmp.h"
+#pragma once
 
-
-const int FILEHEADER_SIZE = sizeof(BITMAPFILEHEADER);
-const int INFOHEDER_SIZE = sizeof(BITMAPINFOHEADER);
+#include "../common/bmp.h"
 
 class image_process{
 public:

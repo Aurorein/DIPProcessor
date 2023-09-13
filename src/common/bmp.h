@@ -1,3 +1,5 @@
+#pragma once
+
 #include<iostream>
 
 // 位图文件头使用2字节对齐
@@ -76,6 +78,9 @@ struct RGBQUAD{
     uint8_t    rgb_reserved_;       // 保留值
 };
 
+const int FILEHEADER_SIZE = sizeof(BITMAPFILEHEADER);
+const int INFOHEDER_SIZE = sizeof(BITMAPINFOHEADER);
+
 class bmp{
 private:
     BITMAPFILEHEADER file_header_;
@@ -85,8 +90,9 @@ private:
 public:
     ~bmp(){
         // 防止内存泄漏
-        delete data_;
-        delete queue_;
+        // delete data_;
+        // delete queue_;
+        
     }
 
     void serialize_file_header(){}
@@ -166,6 +172,10 @@ public:
     void set_bf_size(uint32_t bf_size){file_header_.bf_size_ = bf_size;}
 
     void set_bf_off_bits(uint32_t bf_offset_bits){file_header_.bf_off_bits_ = bf_offset_bits;}
+
+    void set_height(int32_t bi_height){info_header_.bi_height_ = bi_height;}
+
+    void set_width(int32_t bi_width){info_header_.bi_width_ = bi_width;}
 };
 
 
