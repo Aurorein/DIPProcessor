@@ -1,6 +1,0 @@
-{
-    "files.associations": {
-        ".jsonc": "json",
-        "*.tcc": "cpp"
-    }
-}
