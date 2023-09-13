@@ -36,5 +36,7 @@ int main(int argc, char *argv[]){
 
     image_histogram_->get_histogram_file();
 
+    image_histogram_->get_histogram_equaled();
+
     return 0;
 }

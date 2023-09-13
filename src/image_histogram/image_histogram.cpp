@@ -63,8 +63,10 @@ void image_histogram::get_histogram_file(){
     // histogram_file_.set_bf_off_bits(FILEHEADER_SIZE + INFOHEDER_SIZE + 256*sizeof(RGBQUAD));
     histogram_file_.set_size_image(line_bytes_histogram * 256);
 
+    histogram_file_.set_queue(bmp_file_.get_queue());
+
     // 声明一个长度为256的数组，用来统计每个灰度的频度
-    uint8_t frequen_array[256] = {0};
+    uint32_t *frequen_array = new uint32_t[256]{0};
 
     // 对灰度图每一个位图数据byte，将其统计到灰度频度数组中
     uint8_t* data = reinterpret_cast<uint8_t*>(bmp_file_.get_data());
@@ -74,15 +76,17 @@ void image_histogram::get_histogram_file(){
 
     for(uint32_t i = 0; i < height; i++){
         for(uint32_t j = 0 ;j < width; j++){
-            uint8_t gray_data = *(data + i*line_bytes + j);
+            uint32_t gray_data = *(data + i*line_bytes + j);
             frequen_array[gray_data] ++;
         }
     }
 
+    piex_arr_ = new uint32_t[256];
+    memcpy(piex_arr_, frequen_array, 256 * sizeof(uint32_t));
     // 创建二维数组，对要保存的直方图的位图数据进行填充
 
     // 1. 首先进行位图数据的归一化
-    uint8_t max_frequen = find_max_in_array(frequen_array ,256);
+    uint32_t max_frequen = find_max_in_array(frequen_array ,256);
     float frequen_scale = (float)max_frequen / 256;
     for(uint32_t i = 0; i < 256 ; i++){
         frequen_array[i] = (uint8_t)( frequen_array[i] / frequen_scale );
@@ -95,7 +99,7 @@ void image_histogram::get_histogram_file(){
     // width
     for(uint32_t i = 0;i<256;i++){
         // height
-        for(uint32_t j = 0;j <255;j++){
+        for(uint32_t j = 0;j <256;j++){
             if(frequen_array[i] > 0){
                 *(histogram_data + j*line_bytes_histogram + i) = 235;
                 frequen_array[i] --;
@@ -104,6 +108,8 @@ void image_histogram::get_histogram_file(){
             }
         }
     }
+
+    histogram_file_.set_data(reinterpret_cast<char *>(histogram_data));
 
     // 将数据写入文件
     size_t pos = file_path_.find_last_of(".");
@@ -135,18 +141,118 @@ void image_histogram::get_histogram_file(){
     // 将位图数据写入磁盘
     file.write(reinterpret_cast<const char*>(histogram_data), sizeof(uint8_t)*(size_image));
 
+    // 释放资源
+    delete[] data;
+
     // 关闭文件资源
     file.close();
 
 }
 
+void image_histogram::get_histogram_equaled(){
+    // 定义好需要的数组
+    float sum_piex = 0.0;
+    uint32_t size_image = bmp_file_.get_size_image();
+    uint8_t *bmp_data = reinterpret_cast<uint8_t *>(bmp_file_.get_data());
 
-uint8_t image_histogram::find_max_in_array(uint8_t arr[], uint32_t size_t){
-    uint8_t max = 0;
+
+    uint32_t piex_accum[256];
+    float frequen_accum[256];
+    uint32_t tmp_accum = 0;
+    // 得到像素点累加数组
+    for(uint32_t i = 0;i< 256;i++){
+        piex_accum[i] += tmp_accum + piex_arr_[i]; 
+        tmp_accum = piex_accum[i];
+    }
+    // 由总面积（所有像素点）得到灰度频度累加数组
+    sum_piex = (float)piex_accum[255];
+    for(uint32_t j = 0;j<256;j++){
+        frequen_accum[j] = piex_accum[j] / sum_piex;
+    }
+
+    // 声明一个数组用来填充均衡化之后的位图数据
+    uint8_t *equal_histogram_data = new uint8_t[size_image];
+
+    // 进行灰度映射
+    mapping_gray(frequen_accum, bmp_data, equal_histogram_data);
+
+    // 另存为文件
+    size_t pos = file_path_.find_last_of(".");
+    if(pos == std::string::npos) {
+        throw std::exception();
+    }
+    std::string file_name = file_path_.substr(0, pos);
+    std::string file_ext = file_path_.substr(pos + 1);
+
+    file_name += "_equal";
+    std::string save_file_path = file_name + "." + file_ext;
+
+    // 将位图文件头和位图信息头保存到文件中
+    std::ofstream file(save_file_path, std::ios::binary);
+    if (!file) {
+        std::cout << "failed to create the BMP file to save." << std::endl;
+        return;
+    }
+
+    // 写入位图文件头和信息头
+    // 将文件位图信息头和位图文件头写入磁盘
+    BITMAPFILEHEADER file_header = bmp_file_.get_file_header();
+    BITMAPINFOHEADER info_header = bmp_file_.get_info_header();
+    file.write(reinterpret_cast<const char*>(&file_header), FILEHEADER_SIZE);
+    file.write(reinterpret_cast<const char*>(&info_header), INFOHEDER_SIZE);
+
+    // 将位图板写入磁盘
+    file.write(reinterpret_cast<const char*>(bmp_file_.get_queue()), sizeof(RGBQUAD)*(256));
+
+    // 将位图数据写入磁盘
+    file.write(reinterpret_cast<const char*>(equal_histogram_data), sizeof(uint8_t)*(size_image));
+
+    // 释放资源
+    delete[] equal_histogram_data;
+
+    // 关闭文件资源
+    file.close();
+
+     /**
+     * 为了实现第三题同时得到直方图
+     */
+    set_image_path(save_file_path);
+
+    read_file();
+
+    get_histogram_file();
+
+}
+
+
+uint32_t image_histogram::find_max_in_array(uint32_t arr[], uint32_t size_t){
+    uint32_t max = 0;
     for(uint32_t i = 0 ; i < size_t ; i++){
         if(arr[i] > max){
             max = arr[i];
         }
     }
     return max;
+}
+
+void image_histogram::mapping_gray(float* frequen_accum, uint8_t* bmp_data, uint8_t* equal_histogram_data){
+
+    uint8_t mapping_arr[256];
+    // 映射到[0-255]  int[(L-1)Sk + 0.5]
+    for(uint32_t i = 0; i < 256 ;i++){
+        mapping_arr[i] = uint8_t(255 * frequen_accum[i] + 0.5);
+    }
+
+    int32_t width = bmp_file_.get_width();
+    int32_t height = bmp_file_.get_height();
+    int32_t line_bytes = (width * 8 / 8 + 3) / 4 * 4;
+
+    // 灰度值映射
+    for(int32_t i = 0; i< height ;i++){
+        for(int32_t j = 0; j< width ;j++){
+            uint32_t origin_data = (uint32_t)*(bmp_data + i*line_bytes + j);
+            *(equal_histogram_data + i*line_bytes + j) = mapping_arr[origin_data];
+        }
+    }
+
 }
