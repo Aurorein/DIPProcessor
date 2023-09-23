@@ -17,5 +17,4 @@ public:
         delete[] mask_kernel_;
     }
 
-
 };

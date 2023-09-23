@@ -34,6 +34,16 @@ void image_process::read_file(){
     
 
     // 3. 读取真实数据
+    int32_t size = bmp_file_.get_size_image();
+    if(size == 0){
+        int32_t height = bmp_file_.get_height();
+        int32_t width = bmp_file_.get_width();
+        int16_t bit_count = bmp_file_.get_bit_count();
+        int32_t line_bytes_bmp = (width * bit_count / 8 + 3) / 4 * 4;
+
+        size = line_bytes_bmp * height;
+
+    }
     char *data = new char[bmp_file_.get_size_image()];
     bmp_file_.set_data(data);
     file.seekg(bmp_file_.get_bf_off_bits(), std::ios::beg);

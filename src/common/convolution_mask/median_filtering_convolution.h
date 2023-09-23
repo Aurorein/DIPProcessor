@@ -9,7 +9,7 @@ public:
         mask_width_ = mask_width;  
     }
 
-    uint8_t convolution_compute(uint8_t* data){
+    uint8_t convolution_compute(uint8_t* data) override{
         uint32_t size_matrix = mask_height_ * mask_width_;
         std::vector<uint8_t> matrix_arr;
         for(uint32_t i = 0; i < mask_height_; ++i){

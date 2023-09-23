@@ -44,7 +44,7 @@ void spatial_domain_filtering::read_file(){
     file.close();
 }
 
-void spatial_domain_filtering::do_smoothing(int border){
+void spatial_domain_filtering::do_filtering(int border){
     // 颜色位数
     uint16_t bit_count = bmp_file_.get_bit_count();
     uint8_t unit = bit_count / 8;
@@ -54,9 +54,6 @@ void spatial_domain_filtering::do_smoothing(int border){
     if(border > height/2 || border > width/2){
         throw std::exception();
     }
-
-    // 选择的卷积核
-    average_filtering_convolution af_convonlution(1 + border * 2 ,1 + border * 2);
 
     // 对原图像数据进行扩充
     uint8_t* data = reinterpret_cast<uint8_t*>(bmp_file_.get_data());
@@ -157,19 +154,19 @@ void spatial_domain_filtering::do_smoothing(int border){
 
     // 通过扩充后的边界值进行卷积运算
     // 将卷积运算的结果赋值给新的位图数组
-    int32_t size_mask = af_convonlution.mask_height_ * af_convonlution.mask_width_;
+    int32_t size_mask = mask_->mask_height_ * mask_->mask_width_;
     for(uint32_t height_c = border; height_c < height_copy - border; height_c ++){
         for(uint32_t width_c = border*unit; width_c < width_copy_r - border*unit; width_c += unit){
             
             for(uint32_t k = 0; k < unit; k++){
                 uint8_t *data_start = new uint8_t[size_mask];
-                for(int32_t i = 0; i< af_convonlution.mask_height_; ++i){
-                    for(int32_t j = 0; j < af_convonlution.mask_width_; ++j){
-                        memcpy(data_start + i*af_convonlution.mask_width_*sizeof(uint8_t) + j, data_copy + line_bytes_copy* (height_c + i) + width_c + j * unit + k - line_bytes_copy - unit , sizeof(uint8_t));
+                for(int32_t i = 0; i< mask_->mask_height_; ++i){
+                    for(int32_t j = 0; j < mask_->mask_width_; ++j){
+                        memcpy(data_start + i*mask_->mask_width_*sizeof(uint8_t) + j, data_copy + line_bytes_copy* (height_c + i) + width_c + j * unit + k - line_bytes_copy - unit , sizeof(uint8_t));
                     }
                     
                 } 
-                uint8_t res = af_convonlution.convolution_compute(data_start) ;
+                uint8_t res = mask_->convolution_compute(data_start) ;
                 *(data_filter + line_bytes * (height_c - border) + width_c - border * unit + k) = res;
                 delete[] data_start;
             }
@@ -187,7 +184,8 @@ void spatial_domain_filtering::do_smoothing(int border){
     std::string file_name = file_path_.substr(0, pos);
     std::string file_ext = file_path_.substr(pos + 1);
 
-    file_name += "_average_filtering";
+
+    file_name += "_" + get_type() + "_filtering";
     std::string save_file_path = file_name + "." + file_ext;
 
     // 将位图文件头和位图信息头保存到文件中

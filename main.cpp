@@ -3,6 +3,8 @@
 #include "./src/image_process/image_process.h"
 #include "./src/image_histogram/image_histogram.h"
 #include "./src/spatial_domain_filtering/spatial_domain_filtering.h"
+#include "./src/spatial_domain_filtering/average_filtering.h"
+#include "./src/spatial_domain_filtering/median_filtering.h"
 #include<memory>
 
 
@@ -42,11 +44,20 @@ int main(int argc, char *argv[]){
     /**
      * 滤波器处理
      */
-    auto spatial_domain_filtering_ = std::make_unique<spatial_domain_filtering>(image_path);
+
+    // 1. 均值滤波
+    auto spatial_domain_filtering_ = std::make_unique<average_filtering>(image_path, 1);
 
     spatial_domain_filtering_->read_file();
 
-    spatial_domain_filtering_->do_smoothing(1); 
+    spatial_domain_filtering_->do_filtering(spatial_domain_filtering_->get_border()); 
+
+    // 2. 中值滤波
+    auto median_domain_filtering_ = std::make_unique<median_filtering>(image_path, 1);
+
+    median_domain_filtering_->read_file();
+
+    median_domain_filtering_->do_filtering(median_domain_filtering_->get_border());
 
     return 0;
 }
