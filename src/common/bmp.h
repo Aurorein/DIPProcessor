@@ -89,7 +89,9 @@ private:
     char* data_;
 public:
     ~bmp(){
+
         // 防止内存泄漏
+
         // delete data_;
         // delete queue_;
         
