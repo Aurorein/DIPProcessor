@@ -7,6 +7,7 @@ image process class homework
 ##### src
 ###### image_process (作业1 图像变换)
 ###### image_histogram (作业2 图像直方图)
+###### spatial_domain_filtering（作业3 空间滤波）
 
 ### 运行
 mkdir build  
