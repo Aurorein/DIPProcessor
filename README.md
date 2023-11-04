@@ -8,6 +8,10 @@ image process class homework
 ###### image_process (作业1 图像变换)
 ###### image_histogram (作业2 图像直方图)
 ###### spatial_domain_filtering（作业3 空间滤波）
+###### image_transformation（作业4 图像变换）
+###### threshold_segmentation（作业5 阈值分割）
+###### region_segmentation（作业6 区域分割）
+###### edge_election（作业7 边缘检测）
 
 ### 运行
 mkdir build  
