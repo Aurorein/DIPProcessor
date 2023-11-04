@@ -14,8 +14,10 @@ add_subdirectory(src/image_histogram)
 add_subdirectory(src/spatial_domain_filtering)
 add_subdirectory(src/image_transformation)
 add_subdirectory(src/threshold_segmentation)
+add_subdirectory(src/region_segmentation)
+add_subdirectory(src/edge_detection)
 
 # target_include_directories(image-server PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(image-server main.cpp)
-target_link_libraries(image-server image_process image_histogram spatial_domain_filtering image_transformation image_segmentation)
+target_link_libraries(image-server image_process image_histogram spatial_domain_filtering image_transformation image_segmentation region_segmentation edge_detection)

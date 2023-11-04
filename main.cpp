@@ -13,6 +13,11 @@
 #include "./src/threshold_segmentation/threshold_t.h"
 #include "./src/threshold_segmentation/iterative_threshold.h"
 #include "./src/threshold_segmentation/ostu.h"
+#include "./src/region_segmentation/region_growing.h"
+#include "./src/region_segmentation/region_spliting.h"
+#include "./src/edge_detection/prewitt_detection.h"
+#include "./src/edge_detection/sobel_detection.h"
+#include "./src/edge_detection/log_detection.h"
 
 #include<memory>
 
@@ -107,22 +112,72 @@ int main(int argc, char *argv[]){
     // t_threshold_->output_segmentation_res();
 
     // 迭代阈值法
-    auto iterative_threshold_ = std::make_unique<iterative_threshold_segmentation>(image_path);
+    // auto iterative_threshold_ = std::make_unique<iterative_threshold_segmentation>(image_path);
 
-    iterative_threshold_->read_file();
+    // iterative_threshold_->read_file();
 
-    iterative_threshold_->get_threshold();
+    // iterative_threshold_->get_threshold();
 
-    iterative_threshold_->output_segmentation_res();
+    // iterative_threshold_->output_segmentation_res();
 
     // ostu阈值法
-    auto ostu_threshold_ = std::make_unique<ostu_threshold_segmentation>(image_path);
+    // auto ostu_threshold_ = std::make_unique<ostu_threshold_segmentation>(image_path);
 
-    ostu_threshold_->read_file();
+    // ostu_threshold_->read_file();
 
-    ostu_threshold_->get_threshold();
+    // ostu_threshold_->get_threshold();
 
-    ostu_threshold_->output_segmentation_res();
-    
+    // ostu_threshold_->output_segmentation_res();
+
+    /**
+     * 区域分割
+     */
+    // 区域增长
+    // std::vector<int*> coors;
+
+    // coors.emplace_back(new int[2]{100, 100}); 
+
+    // coors.emplace_back(new int[2]{200, 20});
+
+    // auto region_growing_ = std::make_unique<region_growing>(image_path, coors);
+
+    // region_growing_->read_file();
+
+    // region_growing_->excute_growing();
+
+    // 区域增强
+    // auto region_spliting_ = std::make_unique<region_spliting>(image_path);
+
+    // region_spliting_->read_file();
+
+    // region_spliting_->execute_spliting();
+
+    /**
+     * 边缘检测--prewitt算子
+     */
+    auto prewitt_detection_ = std::make_unique<prewitt_detection>(image_path);
+
+    prewitt_detection_->read_file();
+
+    prewitt_detection_->execute_detection();
+
+    /**
+     * 边缘检测--sobel算子
+     */
+    auto sobel_detection_ = std::make_unique<sobel_detection>(image_path);
+
+    sobel_detection_->read_file();
+
+    sobel_detection_->execute_detection();
+
+    /**
+     * 边缘检测--log算子
+     */
+    auto log_detection_ = std::make_unique<log_detection>(image_path);
+
+    log_detection_->read_file();
+
+    log_detection_->execute_detection();
+
     return 0;
 }
