@@ -18,6 +18,8 @@
 #include "./src/edge_detection/prewitt_detection.h"
 #include "./src/edge_detection/sobel_detection.h"
 #include "./src/edge_detection/log_detection.h"
+#include "./src/hough_transform/hough_transform.h"
+#include "./src/zone_marker/zone_marker.h"
 
 #include<memory>
 
@@ -155,29 +157,51 @@ int main(int argc, char *argv[]){
     /**
      * 边缘检测--prewitt算子
      */
-    auto prewitt_detection_ = std::make_unique<prewitt_detection>(image_path);
+    // auto prewitt_detection_ = std::make_unique<prewitt_detection>(image_path);
 
-    prewitt_detection_->read_file();
+    // prewitt_detection_->read_file();
 
-    prewitt_detection_->execute_detection();
+    // prewitt_detection_->execute_detection();
 
     /**
      * 边缘检测--sobel算子
      */
-    auto sobel_detection_ = std::make_unique<sobel_detection>(image_path);
+    // auto sobel_detection_ = std::make_unique<sobel_detection>(image_path);
 
-    sobel_detection_->read_file();
+    // sobel_detection_->read_file();
 
-    sobel_detection_->execute_detection();
+    // sobel_detection_->execute_detection();
 
     /**
      * 边缘检测--log算子
      */
-    auto log_detection_ = std::make_unique<log_detection>(image_path);
+    // auto log_detection_ = std::make_unique<log_detection>(image_path);
 
-    log_detection_->read_file();
+    // log_detection_->read_file();
 
-    log_detection_->execute_detection();
+    // log_detection_->execute_detection();
+
+    /**
+     * hough变换
+     */
+    // auto hough_transform_ = std::make_unique<hough_transformation>(image_path);
+
+    // hough_transform_->read_file();
+
+    // hough_transform_->convert_8_to_24();
+
+    // hough_transform_->execute_transformation();
+
+    /**
+     * 区域标记
+     */
+    auto zone_marker_ = std::make_unique<zone_marker>(image_path);
+
+    zone_marker_->read_file();
+
+    zone_marker_->convert_8_to_24();
+
+    zone_marker_->execute_zone_mark();
 
     return 0;
 }
