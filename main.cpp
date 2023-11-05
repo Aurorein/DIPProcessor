@@ -20,6 +20,7 @@
 #include "./src/edge_detection/log_detection.h"
 #include "./src/hough_transform/hough_transform.h"
 #include "./src/zone_marker/zone_marker.h"
+#include "./src/contour_extraction/contour_extraction.h"
 
 #include<memory>
 
@@ -195,13 +196,22 @@ int main(int argc, char *argv[]){
     /**
      * 区域标记
      */
-    auto zone_marker_ = std::make_unique<zone_marker>(image_path);
+    // auto zone_marker_ = std::make_unique<zone_marker>(image_path);
 
-    zone_marker_->read_file();
+    // zone_marker_->read_file();
 
-    zone_marker_->convert_8_to_24();
+    // zone_marker_->convert_8_to_24();
 
-    zone_marker_->execute_zone_mark();
+    // zone_marker_->execute_zone_mark();
+    
+    /**
+     * 轮廓提取
+     */
+    // auto contour_extraction_ = std::make_unique<contour_extraction>(image_path);
+
+    // contour_extraction_->read_file();
+
+    // contour_extraction_->execute_contour_extract();
 
     return 0;
 }
