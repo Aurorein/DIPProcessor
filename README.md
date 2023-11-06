@@ -12,6 +12,9 @@ image process class homework
 ###### threshold_segmentation（作业5 阈值分割）
 ###### region_segmentation（作业6 区域分割）
 ###### edge_election（作业7 边缘检测）
+###### hough_transformation（作业8 hough变换）
+###### zone_marker（作业9 区域标记）
+###### contour_extraction（作业10 轮廓提取）
 
 ### 运行
 mkdir build  
