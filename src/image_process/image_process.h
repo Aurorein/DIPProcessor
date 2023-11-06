@@ -14,6 +14,8 @@ public:
 
     void channel_split();
 
+    void set_image_file(std::string file_path){file_path_ = file_path;}
+
     
 private:
     std::string file_path_;  // 要处理的文件路径
